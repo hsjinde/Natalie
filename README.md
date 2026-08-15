@@ -24,19 +24,14 @@ python3 -m http.server 8000
 
 ## 部署到 GitHub Pages
 
-網站檔案放在儲存庫根目錄，兩種方式擇一即可：
+網站檔案放在儲存庫根目錄，目前已設定為**從分支部署**：
 
-**方式 A — 從分支部署（最簡單）**
+Settings → Pages → Build and deployment → Source 為 **Deploy from a branch**，
+Branch 為 **main** 與 **/ (root)**。
 
-Settings → Pages → Build and deployment → Source 選 **Deploy from a branch**，
-Branch 選 **main** 與 **/ (root)**，按 Save。
+只要有東西推送到 `main`，GitHub 就會自動重新發佈，不需要額外的 workflow。
 
-**方式 B — 用 GitHub Actions 部署**
-
-Settings → Pages → Source 選 **GitHub Actions**。
-`.github/workflows/pages.yml` 會在每次推送到 `main` 時自動部署。
-
-完成後網址為：`https://<你的帳號>.github.io/<儲存庫名稱>/`
+網址：https://hsjinde.github.io/Natalie/
 
 > `.nojekyll` 用來關閉 Jekyll 處理，確保所有靜態檔案原封不動地被提供。
 

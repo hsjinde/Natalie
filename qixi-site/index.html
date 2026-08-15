@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>2026 七夕限定任務</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="cosmicDepth">
+  <div id="cosmicImg"></div>
+  <div id="cosmicTint"></div>
+  <div id="cosmicStars"></div>
+</div>
+
+<!-- Spotify 官方嵌入播放器：永遠可見，不隱藏、不自製 UI。
+     「開始任務」按鈕會嘗試呼叫 play()，若被瀏覽器 autoplay 政策擋下，
+     這裡的播放器本身就有播放鍵，使用者可以直接按 -->
+<div class="spotify-widget">
+  <div class="sw-label">♫ 我們的歌</div>
+  <div id="spotify-embed-container"></div>
+</div>
+
+<!-- ============ SECTION 1: OPENING（全部置中） ============ -->
+<section id="opening" class="night">
+  <div class="stars-layer" id="starsOpening"></div>
+  <div class="moon reveal in"></div>
+  <div class="eyebrow reveal in">🌙 七夕限定任務</div>
+  <div class="title-lg reveal in" style="color:#fff;">2026.08.19</div>
+  <p class="soft-line center reveal in reveal-delay-1" style="margin-top:14px;">今年的七夕，<br>有一件事情想和你一起完成。</p>
+
+  <div class="mission-card reveal in reveal-delay-2">
+    <div class="date">MISSION BRIEFING</div>
+    <div class="mission-list">
+      <div>任務對象｜<b id="mTarget"></b></div>
+      <div>任務發起人｜<b id="mFrom"></b></div>
+      <div>任務難度｜★☆☆☆☆</div>
+      <div>預估時間｜一個晚上</div>
+      <div>必要條件｜你要出現</div>
+    </div>
+    <button class="btn-primary" id="startBtn">【開始任務】</button>
+  </div>
+  <div class="scroll-hint"><span>↓</span> 往下滑動</div>
+</section>
+
+<!-- ============ SECTION 2: ABOUT US ============ -->
+<section id="about">
+  <div class="wrap">
+    <div class="eyebrow reveal">ABOUT US</div>
+    <h2 class="title-lg">我們的故事，已經 13 年了</h2>
+    <div class="timeline" id="timeline"></div>
+    <p class="tl-final reveal">然後，就一路走到了今天 ❤️</p>
+  </div>
+</section>
+
+<!-- ============ SECTION 3: MEMORIES ============ -->
+<section id="memories">
+  <div class="stars-layer" id="starsMemories"></div>
+  <div class="wrap" style="position:relative;">
+    <div class="title-lg">13 YEARS</div>
+    <div class="title-lg">A LOT OF MEMORIES</div>
+    <div class="sub reveal reveal-delay-2">AND STILL COUNTING.</div>
+    <div class="drag-hint" id="dragHint">
+      <div class="dh-title">來，把我們的回憶攤開看看。</div>
+      <div class="dh-sub">可以試著拖動照片喔 ✨</div>
+    </div>
+    <div class="photo-wall" id="photoWall"></div>
+  </div>
+</section>
+
+<!-- ============ SECTION 4: QUIZ ============ -->
+<section id="quiz">
+  <div class="wrap">
+    <div class="eyebrow reveal center" style="display:block;">COUPLE SURVIVAL TEST</div>
+    <h2 class="title-lg center">❤️ 情侶生存能力測驗</h2>
+    <p class="soft-line center reveal" style="margin:14px auto 0;">恭喜你們走到現在。<br>但長期交往是一門高難度學科。<br>現在開始進行測驗。</p>
+    <div class="quiz-progress" id="quizProgress"></div>
+    <div id="quizArea"></div>
+    <div class="badges" id="badges"></div>
+    <div class="quiz-done-msg" id="quizDoneMsg" style="display:none;">恭喜你通過情侶生存測驗。</div>
+  </div>
+</section>
+
+<!-- ============ SECTION 5: OUR WAY ============ -->
+<section id="ourway">
+  <div class="wrap">
+    <div class="line-seq" id="lineSeq"></div>
+    <div class="line-final" id="lineFinal">或許過程中會有摩擦，但只要我們彼此心繫著，多溝通也能幸福長久。</div>
+  </div>
+</section>
+
+<!-- ============ SECTION 6: DATE PLANNER ============ -->
+<section id="planner">
+  <div class="wrap">
+    <div class="eyebrow reveal center" style="display:block;">🌙 2026 七夕約會計畫</div>
+    <h2 class="title-lg center">今年的七夕，要怎麼過？</h2>
+    <p class="soft-line center reveal planner-sub">不用特別安排什麼大行程。<br>就想找一天，一起吃點喜歡的小東西、一起走走、聊聊天。<br><br>所以這次換你選。</p>
+    <h3 class="title-md center">🍽️ 晚餐吃什麼？</h3>
+    <div class="opt-grid" id="dinnerGrid"></div>
+    <div class="planner-response" id="dinnerResponse"></div>
+  </div>
+
+  <!-- SECTION 7 nested: activity after dinner -->
+  <div class="wrap" id="activity">
+    <h3 class="title-md center" style="margin:50px 0 18px;">那吃完要做什麼？</h3>
+    <div class="opt-grid" id="activityGrid" style="grid-template-columns:1fr 1fr; max-width:420px;"></div>
+    <div class="planner-response" id="activityResponse"></div>
+  </div>
+</section>
+
+<!-- ============ SECTION 8: GENERATE DATE ============ -->
+<section id="generate">
+  <div class="wrap" style="width:100%;">
+    <div class="title-lg">✨ YOUR DATE PLAN</div>
+    <div class="date-card" id="dateCard">
+      <div class="dc-date" id="dcDate"></div>
+      <div class="date-row"><span>🍽️ 晚餐</span><span id="dcDinner">－</span></div>
+      <div class="date-row"><span>🌙 晚餐後</span><span id="dcActivity">－</span></div>
+      <div class="date-row" style="border-bottom:none;"><span>❤️ 約會對象</span><span id="dcWho"></span></div>
+      <div class="date-note">完美。這份行程一經確認，恕不接受退貨。</div>
+    </div>
+    <button class="btn-primary" id="confirmBtn">【確認約會 ❤️】</button>
+  </div>
+</section>
+
+<!-- ============ SECTION 9: FINAL MESSAGE ============ -->
+<section id="final">
+  <div class="wrap">
+    <div id="finalLines"></div>
+    <button class="final-btn" id="finalBtn">【約會任務：CONFIRMED ✓】</button>
+    <div class="final-signoff reveal">下一個故事，我們繼續一起寫。</div>
+  </div>
+</section>
+
+<div class="hearts-fx" id="heartsFx"></div>
+
+<!-- photo lightbox -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-inner">
+    <button class="lightbox-close" id="lightboxClose">✕</button>
+    <img id="lightboxImg" src="" alt="放大照片">
+  </div>
+</div>
+<script src="js/content.js"></script>
+<script src="js/main.js"></script>
+<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+</body>
+</html>

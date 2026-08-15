@@ -26,17 +26,27 @@
   <div id="cosmicStars"></div>
 </div>
 
-<!-- Spotify 官方嵌入播放器。預設收合成小藥丸，不遮擋內容；
-     點「開始任務」或點藥丸本身會展開，展開後才嘗試 play()。
-     autoplay 被瀏覽器擋下時，官方播放器本身就有播放鍵可以直接按。 -->
-<div class="spotify-widget is-collapsed" id="spotifyWidget">
-  <button type="button" class="sw-toggle" id="spotifyToggle" aria-expanded="false" aria-controls="spotifyPanel">
-    <span class="sw-note" aria-hidden="true">♫</span>
-    <span class="sw-text">我們的歌</span>
-    <span class="sw-caret" aria-hidden="true">▾</span>
+<!-- 背景音樂：自製的 MP3 播放器（整首歌完整播放，不再是 Spotify 的 30 秒試聽）。
+     歌曲檔案與標題設定在 js/content.js 的 CONTENT.music。
+     預設收合成小藥丸，不遮擋內容；點「開始任務」或點藥丸本身會展開並開始播放。 -->
+<div class="music-widget is-collapsed" id="musicWidget">
+  <button type="button" class="mw-toggle" id="musicToggle" aria-expanded="false" aria-controls="musicPanel">
+    <span class="mw-note" aria-hidden="true">♫</span>
+    <span class="mw-text">我們的歌</span>
+    <span class="mw-caret" aria-hidden="true">▾</span>
   </button>
-  <div class="sw-panel" id="spotifyPanel">
-    <div id="spotify-embed-container"></div>
+  <div class="mw-panel" id="musicPanel">
+    <div class="mw-row">
+      <button type="button" class="mw-play" id="musicPlay" aria-label="播放">▶</button>
+      <div class="mw-meta">
+        <div class="mw-title" id="musicTitle"></div>
+        <div class="mw-artist" id="musicArtist"></div>
+      </div>
+    </div>
+    <input type="range" class="mw-seek" id="musicSeek" min="0" max="1000" value="0" step="1" aria-label="播放進度" disabled>
+    <div class="mw-time"><span id="musicCurrent">0:00</span><span id="musicDuration">0:00</span></div>
+    <p class="mw-error" id="musicError" role="status" aria-live="polite" hidden></p>
+    <audio id="musicAudio" preload="metadata"></audio>
   </div>
 </div>
 
@@ -180,6 +190,5 @@
 </div>
 <script src="js/content.js"></script>
 <script src="js/main.js"></script>
-<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 </body>
 </html>

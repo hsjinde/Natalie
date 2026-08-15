@@ -8,7 +8,17 @@ const CONTENT = {
   girlfriendName: "美麗的女友大人",
   qixiDate: "2026.08.19",
   dateWith: "我",           /* 約會方案卡片上的「約會對象」 */
-  spotifyTrackId: "0yWDm3hpwuIKJMtTKLzvlc",
+
+  /* 背景音樂：把 mp3 放進 audio/ 資料夾，然後在這裡填檔名即可。
+     src 也可以直接填一個完整網址（例如自己的雲端空間直連）。
+     整首歌會完整播放，播完自動從頭再來（loop: false 可關掉重複）。 */
+  music: {
+    src: "audio/our-song.mp3",
+    title: "我們的歌",
+    artist: "",
+    loop: true,
+    volume: 0.65,
+  },
 
   timeline: [
     { tag: "13 YEARS AGO", lines: ["高中", "那時候的我們，大概不會想到，這個認識了很久的人，最後會成為現在最熟悉的另一半。"] },

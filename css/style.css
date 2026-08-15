@@ -354,9 +354,9 @@ body.edit-mode .drag-hint{ display: block; }
 }
 .leo-btns button#leoClose{ background:#e3d3ef; color:#5a4a70; }
 
-/* ============== Spotify 小型嵌入播放器（官方 Embed）
+/* ============== 背景音樂播放器（自製，播放本地 mp3）
    預設收合成小藥丸，不擋住照片牆與按鈕；點一下才展開 ============== */
-.spotify-widget{
+.music-widget{
   position: fixed; right: 14px; bottom: 14px; z-index: 500;
   width: 280px; max-width: 82vw;
   background: rgba(255,255,255,.94); border: 1px solid var(--lavender);
@@ -364,23 +364,74 @@ body.edit-mode .drag-hint{ display: block; }
   backdrop-filter: blur(6px);
   transition: width .28s cubic-bezier(.22,.85,.32,1), border-radius .28s ease;
 }
-.sw-toggle{
+.mw-toggle{
   display:flex; align-items:center; gap:6px; width:100%;
   padding: 4px 6px; min-height: 32px;
   font-family: var(--font-accent); font-size:.78rem; color: var(--pink-deep);
   text-shadow:none;
 }
-.sw-toggle .sw-text{ flex:1; text-align:left; white-space:nowrap; }
-.sw-toggle .sw-caret{ transition: transform .28s ease; font-size:.7rem; }
-.sw-panel{ margin-top: 6px; }
-#spotify-embed-container{ border-radius: 12px; overflow:hidden; line-height:0; }
+.mw-toggle .mw-text{ flex:1; text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mw-toggle .mw-caret{ transition: transform .28s ease; font-size:.7rem; }
+.mw-panel{ margin-top: 8px; }
 
-/* 收合狀態：只剩一顆藥丸，iframe 仍在 DOM 裡（保留播放狀態），只是不佔版面 */
-.spotify-widget.is-collapsed{ width: auto; border-radius: 999px; }
-.spotify-widget.is-collapsed .sw-panel{
+/* 播放中：藥丸上的音符輕輕跳動，收合時也看得出音樂還在放 */
+.music-widget.is-playing .mw-note{ animation: mwBeat 1.4s ease-in-out infinite; }
+@keyframes mwBeat{
+  0%, 100%{ transform: scale(1); opacity:.85; }
+  50%{ transform: scale(1.25); opacity:1; }
+}
+
+.mw-row{ display:flex; align-items:center; gap:10px; }
+.mw-play{
+  flex:none; width:38px; height:38px; border-radius:50%;
+  background: var(--lavender-deep); color:#fff;
+  font-size:.85rem; line-height:1; text-shadow:none;
+  display:flex; align-items:center; justify-content:center;
+  transition: transform .18s ease, background .18s ease;
+}
+.mw-play:hover{ transform: scale(1.06); background: var(--pink-deep); }
+.mw-play:disabled{ background:#cfc4dd; cursor:not-allowed; transform:none; }
+.mw-meta{ min-width:0; flex:1; text-shadow:none; }
+.mw-title{
+  font-family: var(--font-accent); font-size:.86rem; color: var(--ink);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.mw-artist{
+  font-size:.72rem; color:#8b7ba3; margin-top:2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* 進度條：把原生 range 換成細細的一條，兩端顏色跟全站一致 */
+.mw-seek{
+  -webkit-appearance:none; appearance:none;
+  width:100%; margin-top:10px; height:4px; border-radius:999px;
+  background: #e7dcf3; cursor:pointer;
+}
+.mw-seek::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none;
+  width:13px; height:13px; border-radius:50%; border:none;
+  background: var(--pink-deep); box-shadow: 0 1px 4px rgba(58,30,80,.3);
+}
+.mw-seek::-moz-range-thumb{
+  width:13px; height:13px; border-radius:50%; border:none;
+  background: var(--pink-deep); box-shadow: 0 1px 4px rgba(58,30,80,.3);
+}
+.mw-seek:disabled{ cursor:not-allowed; opacity:.6; }
+.mw-time{
+  display:flex; justify-content:space-between;
+  margin-top:5px; font-size:.68rem; color:#8b7ba3; text-shadow:none;
+}
+.mw-error{
+  margin-top:8px; font-size:.7rem; line-height:1.5;
+  color: var(--pink-deep); text-shadow:none; word-break:break-all;
+}
+
+/* 收合狀態：只剩一顆藥丸，<audio> 仍在 DOM 裡（音樂繼續放），只是不佔版面 */
+.music-widget.is-collapsed{ width: auto; border-radius: 999px; }
+.music-widget.is-collapsed .mw-panel{
   height:0; overflow:hidden; margin-top:0; opacity:0; pointer-events:none;
 }
-.spotify-widget.is-collapsed .sw-caret{ transform: rotate(180deg); }
+.music-widget.is-collapsed .mw-caret{ transform: rotate(180deg); }
 
 .polaroid .ph{
   width:100%; aspect-ratio: 1/1; border-radius:2px; overflow:hidden; position:relative;

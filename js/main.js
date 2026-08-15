@@ -1010,41 +1010,119 @@ window.addEventListener('resize', requestTick);
 onScrollFrame();
 
 /* ============================================================
-   SPOTIFY 背景音樂 — 官方 Spotify IFrame API
-   預設收合成右下角的小藥丸，不遮住照片與按鈕；
-   點藥丸或點「開始任務」才展開。展開時嘗試呼叫官方 controller.play()，
-   若被瀏覽器 autoplay 政策擋下，展開的官方播放器本身就有播放鍵可以直接按。
+   背景音樂 — 自己的 MP3 播放器（整首歌，不是 30 秒試聽）
+   歌曲設定在 CONTENT.music。預設收合成右下角小藥丸，不遮住照片與按鈕；
+   點藥丸或點「開始任務」才展開並播放。行動裝置與瀏覽器的 autoplay 政策
+   要求「使用者動作」才能出聲，這兩個動作剛好都是點擊，所以能正常播放。
    ============================================================ */
-let spotifyController = null;
-const spotifyWidget = document.getElementById('spotifyWidget');
-const spotifyToggle = document.getElementById('spotifyToggle');
+const musicWidget = document.getElementById('musicWidget');
+const musicToggle = document.getElementById('musicToggle');
+const musicAudio  = document.getElementById('musicAudio');
+const musicPlay   = document.getElementById('musicPlay');
+const musicSeek   = document.getElementById('musicSeek');
+const musicError  = document.getElementById('musicError');
+const musicCurrentEl  = document.getElementById('musicCurrent');
+const musicDurationEl = document.getElementById('musicDuration');
 
-window.onSpotifyIframeApiReady = (IFrameAPI) => {
-  const element = document.getElementById('spotify-embed-container');
-  const options = {
-    uri: 'spotify:track:' + CONTENT.spotifyTrackId,
-    width: '100%',
-    height: '152',
-  };
-  IFrameAPI.createController(element, options, (controller) => {
-    spotifyController = controller;
-  });
-};
+const MUSIC = CONTENT.music || {};
 
-function setSpotifyOpen(open){
-  spotifyWidget.classList.toggle('is-collapsed', !open);
-  spotifyToggle.setAttribute('aria-expanded', String(open));
+/* 顯示歌名／歌手：沒填歌手就把那一行收起來（藥丸上固定寫「我們的歌」） */
+document.getElementById('musicTitle').textContent = MUSIC.title || '我們的歌';
+const musicArtistEl = document.getElementById('musicArtist');
+musicArtistEl.textContent = MUSIC.artist || '';
+musicArtistEl.hidden = !MUSIC.artist;
+
+if(MUSIC.src){
+  musicAudio.src = MUSIC.src;
+  musicAudio.loop = MUSIC.loop !== false;
+  musicAudio.volume = typeof MUSIC.volume === 'number' ? MUSIC.volume : 0.65;
+}else{
+  showMusicError('還沒設定歌曲檔案。');
 }
 
-spotifyToggle.addEventListener('click', ()=>{
-  setSpotifyOpen(spotifyWidget.classList.contains('is-collapsed'));
+function fmtTime(sec){
+  if(!isFinite(sec) || sec < 0) return '0:00';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+/* 檔案不存在或格式不支援時，直接把狀況寫出來，不要靜靜地沒有聲音 */
+function showMusicError(msg){
+  musicError.textContent = msg;
+  musicError.hidden = false;
+  musicPlay.disabled = true;
+  musicSeek.disabled = true;
+}
+
+function setMusicOpen(open){
+  musicWidget.classList.toggle('is-collapsed', !open);
+  musicToggle.setAttribute('aria-expanded', String(open));
+}
+
+/* 播放／暫停：play() 回傳 Promise，被瀏覽器擋下時保持展開讓使用者自己按 */
+function playMusic(){
+  if(!MUSIC.src) return;
+  const p = musicAudio.play();
+  if(p && p.catch) p.catch(()=>{ setMusicOpen(true); });
+}
+
+function toggleMusic(){
+  if(musicAudio.paused) playMusic();
+  else musicAudio.pause();
+}
+
+musicToggle.addEventListener('click', ()=>{
+  setMusicOpen(musicWidget.classList.contains('is-collapsed'));
+});
+
+musicPlay.addEventListener('click', toggleMusic);
+
+/* 按鈕圖示與藥丸上的音符動畫，都跟著實際播放狀態走 */
+musicAudio.addEventListener('play', ()=>{
+  musicWidget.classList.add('is-playing');
+  musicPlay.textContent = '❚❚';
+  musicPlay.setAttribute('aria-label', '暫停');
+});
+musicAudio.addEventListener('pause', ()=>{
+  musicWidget.classList.remove('is-playing');
+  musicPlay.textContent = '▶';
+  musicPlay.setAttribute('aria-label', '播放');
+});
+
+musicAudio.addEventListener('loadedmetadata', ()=>{
+  musicDurationEl.textContent = fmtTime(musicAudio.duration);
+  musicSeek.disabled = false;
+});
+
+/* 拖曳進度條時先停止跟著音訊更新，放開後才跳到新位置 */
+let seeking = false;
+musicSeek.addEventListener('input', ()=>{
+  seeking = true;
+  if(isFinite(musicAudio.duration)){
+    musicCurrentEl.textContent = fmtTime(musicAudio.duration * (musicSeek.value / 1000));
+  }
+});
+musicSeek.addEventListener('change', ()=>{
+  if(isFinite(musicAudio.duration)){
+    musicAudio.currentTime = musicAudio.duration * (musicSeek.value / 1000);
+  }
+  seeking = false;
+});
+
+musicAudio.addEventListener('timeupdate', ()=>{
+  if(seeking || !isFinite(musicAudio.duration) || musicAudio.duration <= 0) return;
+  musicSeek.value = String(Math.round((musicAudio.currentTime / musicAudio.duration) * 1000));
+  musicCurrentEl.textContent = fmtTime(musicAudio.currentTime);
+});
+
+musicAudio.addEventListener('error', ()=>{
+  showMusicError('找不到音樂檔（' + MUSIC.src + '），請確認檔案有放進 audio/ 資料夾。');
 });
 
 document.getElementById('startBtn').addEventListener('click', ()=>{
   scrollToEl(document.getElementById('about'));
   /* 展開播放器，讓 autoplay 被擋下時也看得到可以按的播放鍵 */
-  setSpotifyOpen(true);
-  if(spotifyController){
-    try{ spotifyController.play(); }catch(err){ /* 瀏覽器擋下自動播放，使用者可直接按播放器 */ }
-  }
+  setMusicOpen(true);
+  playMusic();
 });

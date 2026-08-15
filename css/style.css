@@ -357,8 +357,11 @@ body.edit-mode .drag-hint{ display: block; }
 /* ============== 背景音樂播放器（自製，播放本地 mp3）
    預設收合成小藥丸，不擋住照片牆與按鈕；點一下才展開 ============== */
 .music-widget{
-  position: fixed; right: 14px; bottom: 14px; z-index: 500;
-  width: 280px; max-width: 82vw;
+  position: fixed; z-index: 500;
+  /* 手機（iPhone 瀏海機／底部橫條）要閃開安全區域，否則會被系統列蓋住 */
+  right: calc(14px + env(safe-area-inset-right, 0px));
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  width: 280px; max-width: calc(100vw - 28px);
   background: rgba(255,255,255,.94); border: 1px solid var(--lavender);
   border-radius: 16px; padding: 8px; box-shadow: var(--shadow-soft);
   backdrop-filter: blur(6px);
@@ -366,7 +369,7 @@ body.edit-mode .drag-hint{ display: block; }
 }
 .mw-toggle{
   display:flex; align-items:center; gap:6px; width:100%;
-  padding: 4px 6px; min-height: 32px;
+  padding: 4px 6px; min-height: 40px;   /* 手指點得到的大小 */
   font-family: var(--font-accent); font-size:.78rem; color: var(--pink-deep);
   text-shadow:none;
 }
@@ -426,10 +429,14 @@ body.edit-mode .drag-hint{ display: block; }
   color: var(--pink-deep); text-shadow:none; word-break:break-all;
 }
 
-/* 收合狀態：只剩一顆藥丸，<audio> 仍在 DOM 裡（音樂繼續放），只是不佔版面 */
+/* 收合狀態：只剩一顆藥丸，<audio> 仍在 DOM 裡（音樂繼續放），只是不佔版面。
+   面板一定要用 position:absolute 抽離版面流——否則就算高度是 0，
+   裡面文字的「最大內容寬度」仍會把藥丸撐開（在手機上會撐成整片蓋住內容）。 */
 .music-widget.is-collapsed{ width: auto; border-radius: 999px; }
 .music-widget.is-collapsed .mw-panel{
-  height:0; overflow:hidden; margin-top:0; opacity:0; pointer-events:none;
+  position:absolute; left:0; right:0; top:100%;
+  height:0; overflow:hidden; margin-top:0; opacity:0;
+  pointer-events:none; visibility:hidden;
 }
 .music-widget.is-collapsed .mw-caret{ transform: rotate(180deg); }
 

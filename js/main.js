@@ -1024,20 +1024,26 @@ const musicError  = document.getElementById('musicError');
 const musicCurrentEl  = document.getElementById('musicCurrent');
 const musicDurationEl = document.getElementById('musicDuration');
 
-const MUSIC = CONTENT.music || {};
+const MUSIC = (typeof CONTENT === 'object' && CONTENT.music) ? CONTENT.music : {};
 
-/* 顯示歌名／歌手：沒填歌手就把那一行收起來（藥丸上固定寫「我們的歌」） */
-document.getElementById('musicTitle').textContent = MUSIC.title || '我們的歌';
-const musicArtistEl = document.getElementById('musicArtist');
-musicArtistEl.textContent = MUSIC.artist || '';
-musicArtistEl.hidden = !MUSIC.artist;
+/* 播放器整段都要能「不存在也不出事」：手機瀏覽器可能還快取著舊版的 HTML，
+   少了任何一個元素就丟例外的話，會連同後面的「開始任務」一起壞掉。 */
+const musicReady = !!(musicWidget && musicToggle && musicAudio && musicPlay && musicSeek);
 
-if(MUSIC.src){
-  musicAudio.src = MUSIC.src;
-  musicAudio.loop = MUSIC.loop !== false;
-  musicAudio.volume = typeof MUSIC.volume === 'number' ? MUSIC.volume : 0.65;
-}else{
-  showMusicError('還沒設定歌曲檔案。');
+if(musicReady){
+  /* 顯示歌名／歌手：沒填歌手就把那一行收起來（藥丸上固定寫「我們的歌」） */
+  document.getElementById('musicTitle').textContent = MUSIC.title || '我們的歌';
+  const musicArtistEl = document.getElementById('musicArtist');
+  musicArtistEl.textContent = MUSIC.artist || '';
+  musicArtistEl.hidden = !MUSIC.artist;
+
+  if(MUSIC.src){
+    musicAudio.src = MUSIC.src;
+    musicAudio.loop = MUSIC.loop !== false;
+    musicAudio.volume = typeof MUSIC.volume === 'number' ? MUSIC.volume : 0.65;
+  }else{
+    showMusicError('還沒設定歌曲檔案。');
+  }
 }
 
 function fmtTime(sec){
@@ -1049,6 +1055,7 @@ function fmtTime(sec){
 
 /* 檔案不存在或格式不支援時，直接把狀況寫出來，不要靜靜地沒有聲音 */
 function showMusicError(msg){
+  if(!musicReady) return;
   musicError.textContent = msg;
   musicError.hidden = false;
   musicPlay.disabled = true;
@@ -1056,13 +1063,14 @@ function showMusicError(msg){
 }
 
 function setMusicOpen(open){
+  if(!musicReady) return;
   musicWidget.classList.toggle('is-collapsed', !open);
   musicToggle.setAttribute('aria-expanded', String(open));
 }
 
 /* 播放／暫停：play() 回傳 Promise，被瀏覽器擋下時保持展開讓使用者自己按 */
 function playMusic(){
-  if(!MUSIC.src) return;
+  if(!musicReady || !MUSIC.src) return;
   const p = musicAudio.play();
   if(p && p.catch) p.catch(()=>{ setMusicOpen(true); });
 }
@@ -1072,6 +1080,7 @@ function toggleMusic(){
   else musicAudio.pause();
 }
 
+if(musicReady){
 musicToggle.addEventListener('click', ()=>{
   setMusicOpen(musicWidget.classList.contains('is-collapsed'));
 });
@@ -1117,8 +1126,9 @@ musicAudio.addEventListener('timeupdate', ()=>{
 });
 
 musicAudio.addEventListener('error', ()=>{
-  showMusicError('找不到音樂檔（' + MUSIC.src + '），請確認檔案有放進 audio/ 資料夾。');
+  showMusicError('找不到音樂檔：' + MUSIC.src);
 });
+}   /* end if(musicReady) */
 
 document.getElementById('startBtn').addEventListener('click', ()=>{
   scrollToEl(document.getElementById('about'));

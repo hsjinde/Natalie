@@ -7,6 +7,7 @@ const CONTENT = {
   boyfriendFull: "晉德大寶貝",
   girlfriendName: "美麗的女友大人",
   qixiDate: "2026.08.19",
+  dateWith: "我",           /* 約會方案卡片上的「約會對象」 */
   spotifyTrackId: "0yWDm3hpwuIKJMtTKLzvlc",
 
   timeline: [
@@ -106,6 +107,6 @@ const IMAGES = [
 /* ============================================================
    PHOTO_LAYOUT —— 拍立得照片版面設定（可留空，使用預設散落角度）
    在編輯模式（?edit=1）用「儲存版面」匯出後，把內容貼在這裡取代，
-   重新部署到 Netlify 後，所有訪客看到的都會是你調整好的版面
+   重新部署後，所有訪客看到的都會是你調整好的版面
    ============================================================ */
 const PHOTO_LAYOUT = {};
